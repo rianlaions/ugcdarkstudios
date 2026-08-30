@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Red Diamond Preview</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-family: 'Raleway', sans-serif;
+      cursor: grab;
+    }
+    body:active {
+      cursor: grabbing;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+
+    // 1. SCENE & CAMERA
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 7;
+
+    // 2. RENDERER
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    document.body.appendChild(renderer.domElement);
+
+    // 3. ENVIRONMENT MAP (For diamond reflections)
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    const envMap = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envMap; 
+
+    // 4. CONTROLS
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enableZoom = false; // Disabled so it doesn't steal scrolling on the main page
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 2.0;
+
+    // 5. HIGHLY FACETED CRYSTAL GEOMETRY
+    // By adding heightSegments (6) and radialSegments (12), we create many small triangles
+    const topGeo = new THREE.ConeGeometry(1, 3.0, 12, 6);
+    topGeo.translate(0, 1.5, 0); 
+    
+    const bottomGeo = new THREE.ConeGeometry(1, 3.0, 12, 6);
+    bottomGeo.rotateX(Math.PI);
+    bottomGeo.translate(0, -1.5, 0);
+
+    let diamondGeo = BufferGeometryUtils.mergeGeometries([topGeo, bottomGeo]);
+    // toNonIndexed is required for true flat shading to work properly on merged geometries
+    diamondGeo = diamondGeo.toNonIndexed();
+    diamondGeo.computeVertexNormals();
+
+    // 6. HOT PINK DIAMOND MATERIAL
+    const diamondMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transmission: 1.0,
+      opacity: 1,
+      metalness: 0.2,
+      roughness: 0.0,
+      ior: 1.8,                 // Lowered IOR to prevent extreme black total internal reflections
+      thickness: 2.0,           
+      dispersion: 2.0,          
+      attenuationColor: new THREE.Color(0xff0011), // Blood Red
+      attenuationDistance: 2.0, // Smoother color gradient
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.0,
+      envMapIntensity: 4.0,     
+      flatShading: true,        
+      side: THREE.FrontSide     // Renders only outside, prevents black artifacts from backfaces
+    });
+
+    const crystal = new THREE.Mesh(diamondGeo, diamondMat);
+    scene.add(crystal);
+    
+    // 7. GLOWING CORE (Solid interior to give the crystal weight and prevent hollowness)
+    const coreGeo = diamondGeo.clone();
+    coreGeo.scale(0.85, 0.9, 0.85); // Takes up most of the inside
+    const coreMat = new THREE.MeshStandardMaterial({
+      color: 0xff0000,
+      emissive: 0xff0011,
+      emissiveIntensity: 1.5,
+      roughness: 0.1,
+      flatShading: true
+    });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    crystal.add(core);
+
+    // 9. INTENSE STUDIO LIGHTING (To create those bright white highlights)
+    const light1 = new THREE.DirectionalLight(0xffffff, 3.0);
+    light1.position.set(5, 5, 5);
+    scene.add(light1);
+
+    const light2 = new THREE.DirectionalLight(0xffffff, 3.0);
+    light2.position.set(-5, 5, 5);
+    scene.add(light2);
+    
+    const light3 = new THREE.DirectionalLight(0xffffff, 2.0);
+    light3.position.set(0, -5, 5);
+    scene.add(light3);
+
+    // 10. ANIMATION LOOP
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      
+      crystal.position.y = Math.sin(Date.now() * 0.002) * 0.15;
+      
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
