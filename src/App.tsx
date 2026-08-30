@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Search, Heart, X, MessageCircle, Camera, Hash } from 'lucide-react';
+import { Menu, Search, Heart, X } from 'lucide-react';
 
 const ITEMS = [
   { id: '1', name: 'Shadow Crown', price: '450', cat: 'Hats', rarity: 'Legendary', rarityClass: 'rarity-legendary', img: 'https://images.pexels.com/photos/14580574/pexels-photo-14580574.jpeg?auto=compress&cs=tinysrgb&w=800' },
@@ -259,7 +259,7 @@ export default function App() {
                   Nenhum item encontrado.
                 </motion.div>
               ) : (
-                filteredItems.map((item, idx) => (
+                filteredItems.map((item) => (
                   <motion.div 
                     key={item.id}
                     layout
