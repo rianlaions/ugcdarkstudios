@@ -193,7 +193,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* HERO */}
-      <header id="home" className="min-h-screen relative flex items-center justify-center overflow-hidden">
+      <header id="home" className="pt-32 pb-12 relative flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0A] z-[1]"></div>
         
         <motion.div 
@@ -225,18 +225,8 @@ export default function App() {
       </header>
 
       {/* CATALOG */}
-      <section id="catalog" className="py-24 px-6 relative z-10">
+      <section id="catalog" className="pb-24 pt-8 px-6 relative z-10 md:-mt-12">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-black uppercase tracking-[0.15em] text-3xl md:text-[36px]">Catálogo UGC</h2>
-            <p className="mt-4 opacity-60 text-base">Explore itens exclusivos para seu avatar Roblox</p>
-          </motion.div>
-
           {/* Filters */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
