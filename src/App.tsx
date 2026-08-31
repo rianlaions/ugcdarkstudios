@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Search, Heart, X } from 'lucide-react';
+import { Menu, Search, Heart, X, ShoppingCart, Trash2 } from 'lucide-react';
 
 const ITEMS = [
   { id: '1', name: 'Shadow Crown', price: '450', cat: 'Hats', rarity: 'Legendary', rarityClass: 'rarity-legendary', img: 'https://images.pexels.com/photos/14580574/pexels-photo-14580574.jpeg?auto=compress&cs=tinysrgb&w=800' },
@@ -99,6 +99,9 @@ export default function App() {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<typeof ITEMS[0] | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const [cart, setCart] = useState<typeof ITEMS[0][]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const filteredItems = ITEMS.filter(item => {
     if (filter === 'Favoritos') {
@@ -117,6 +120,15 @@ export default function App() {
       else next.add(id);
       return next;
     });
+  };
+
+  const toggleCart = (e: React.MouseEvent, item: typeof ITEMS[0]) => {
+    e.stopPropagation();
+    if (cart.find(c => c.id === item.id)) {
+      setCart(cart.filter(c => c.id !== item.id));
+    } else {
+      setCart([...cart, item]);
+    }
   };
 
   useEffect(() => {
@@ -158,6 +170,14 @@ export default function App() {
               </svg>
               DISCORD
             </a>
+            <button onClick={() => setIsCartOpen(true)} className="relative hover:text-red-500 transition-colors p-2" aria-label="Carrinho">
+              <ShoppingCart className="w-5 h-5" />
+              {cart.length > 0 && (
+                <span className="absolute top-0 right-0 bg-[#FF1E1E] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  {cart.length}
+                </span>
+              )}
+            </button>
           </div>
           <button className="md:hidden relative z-50 p-2 -mr-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Menu">
             {isMobileMenuOpen ? <X className="w-8 h-8 text-white" /> : <Menu className="w-8 h-8 text-white" />}
@@ -188,6 +208,10 @@ export default function App() {
               </svg>
               DISCORD
             </a>
+            <button onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }} className="flex items-center gap-3 font-bold uppercase tracking-widest text-sm hover:text-red-500 transition-colors">
+              <ShoppingCart className="w-5 h-5" /> 
+              Meu Carrinho ({cart.length})
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -293,6 +317,13 @@ export default function App() {
                       >
                         <Heart className="w-4 h-4" color={favorites.has(item.id) ? 'transparent' : '#FF1E1E'} fill={favorites.has(item.id) ? '#FF1E1E' : 'none'} />
                       </button>
+                      <button 
+                        onClick={(e) => toggleCart(e, item)}
+                        className={`absolute top-14 right-3 w-9 h-9 rounded-full glass flex items-center justify-center transition-colors ${cart.find(c => c.id === item.id) ? 'bg-[#FF1E1E] text-white' : 'hover:bg-red-500/30 text-white'}`} 
+                        aria-label="Adicionar ao Carrinho"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                      </button>
                     </div>
                     
                     <div className="p-5">
@@ -356,6 +387,59 @@ export default function App() {
         </div>
       </section>
 
+      {/* CART SIDEBAR */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              onClick={() => setIsCartOpen(false)}
+            />
+            <motion.div 
+              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+              className="fixed top-0 right-0 bottom-0 w-full md:w-[400px] bg-[#0A0A0A] border-l border-white/10 z-50 p-6 flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="font-black text-xl tracking-widest uppercase">Seu Carrinho</h2>
+                <button onClick={() => setIsCartOpen(false)} className="hover:text-red-500 transition-colors p-2"><X className="w-6 h-6" /></button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto flex flex-col gap-4 scrollbar-hide pr-2">
+                {cart.length === 0 ? (
+                  <div className="text-center opacity-50 mt-10">Seu carrinho está vazio.</div>
+                ) : (
+                  cart.map(item => (
+                    <motion.div layout key={item.id} className="flex items-center gap-4 bg-white/5 rounded-xl p-3 border border-white/5 relative group">
+                      <img src={item.img} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                      <div className="flex-1">
+                        <h3 className="font-bold text-sm leading-tight">{item.name}</h3>
+                        <p className="text-[#FF1E1E] text-sm font-bold mt-1">R$ {item.price}</p>
+                      </div>
+                      <button onClick={(e) => toggleCart(e, item)} className="p-2 hover:text-[#FF1E1E] text-white/50 transition-colors" title="Remover">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+              
+              {cart.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-white/10">
+                  <div className="flex justify-between font-bold text-lg mb-6">
+                    <span>Total (Robux)</span>
+                    <span className="text-[#FF1E1E]">R$ {cart.reduce((acc, item) => acc + parseInt(item.price), 0)}</span>
+                  </div>
+                  <button onClick={() => alert('Em breve: Gerar link de pagamento/carrinho para o Roblox!')} className="w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm bg-[#FF1E1E] hover:bg-white hover:text-[#FF1E1E] text-white transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,30,30,0.3)]">
+                    Gerar Carrinho
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* MODAL */}
       <AnimatePresence>
         {selectedItem && (
@@ -392,8 +476,18 @@ export default function App() {
                 <p className="mt-5 text-sm opacity-60 leading-relaxed">
                   Este item exclusivo da UGC Dark Studios traz um design futurista premium para o seu avatar Roblox. Disponível por tempo limitado.
                 </p>
-                <button className="mt-8 w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all hover:scale-[1.02] glow-red bg-[#FF1E1E] text-white">
+                <a 
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); window.open('https://www.roblox.com/catalog', '_blank'); }}
+                  className="mt-8 block text-center w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(255,30,30,0.3)] bg-[#FF1E1E] hover:bg-white hover:text-[#FF1E1E] text-white"
+                >
                   Comprar no Roblox
+                </a>
+                <button 
+                  onClick={(e) => toggleCart(e, selectedItem)}
+                  className={`mt-3 w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all hover:scale-[1.02] border ${cart.find(c => c.id === selectedItem.id) ? 'bg-[#FF1E1E] border-[#FF1E1E] text-white' : 'border-white/20 hover:border-red-500/50 text-white'}`}
+                >
+                  {cart.find(c => c.id === selectedItem.id) ? 'Remover do Carrinho' : 'Adicionar ao Carrinho'}
                 </button>
               </div>
             </motion.div>
