@@ -135,14 +135,13 @@ export default function App() {
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass-strong">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="#home" className="flex items-center gap-3 group cursor-pointer">
+          <a href="#home" className="flex items-center gap-3 group cursor-pointer" aria-label="Home">
             <iframe 
               src="/3d-crystal.html" 
               title="3D Crystal Logo"
               className="w-10 h-10 pointer-events-none relative z-10 group-hover:scale-110 transition-transform"
               style={{ border: 'none', background: 'transparent' }}
             />
-            <h1 className="font-extrabold text-lg tracking-wider group-hover:text-[#FF1E1E] transition-colors">UGC DARK STUDIOS</h1>
           </a>
           <div className="hidden md:flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.15em]">
             <a href="#home" className="hover:text-red-500 transition-colors">Home</a>
@@ -201,7 +200,7 @@ export default function App() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 text-center px-6 max-w-4xl"
+          className="relative z-10 text-center px-6 max-w-4xl mt-20"
         >
           <div className="inline-block mb-2 relative w-32 h-32 md:w-48 md:h-48 mx-auto flex items-center justify-center">
             {/* The glow effect behind the crystal */}
@@ -209,24 +208,19 @@ export default function App() {
             <iframe 
               src="/3d-crystal.html" 
               title="3D Crystal"
-              className="w-full h-full relative z-10"
+              className="w-full h-full pointer-events-none relative z-10"
               style={{ border: 'none', background: 'transparent' }}
             />
           </div>
-          <h2 className="font-black uppercase tracking-[0.2em] leading-tight text-4xl md:text-5xl lg:text-[52px]">
-            UGC Dark Studios
-          </h2>
-          <p className="mt-6 max-w-2xl mx-auto leading-relaxed opacity-70 text-base">
-            Descubra itens exclusivos para seu avatar Roblox. Design futurista, qualidade de estúdio e atualizações constantes. Explore manequins, filtros personalizados e compre direto no Roblox.
+          
+          <h1 className="text-4xl md:text-[80px] font-black tracking-[0.2em] leading-tight mb-6">
+            UGC DARK <br className="hidden md:block" /> STUDIOS
+          </h1>
+          
+          <p className="text-base md:text-xl opacity-60 font-light max-w-2xl mx-auto leading-relaxed">
+            Descubra itens exclusivos para seu avatar Roblox. Design futurista, qualidade de estúdio e atualizações constantes. 
+            Explore manequins, filtros personalizados e compreensivos direto no Roblox.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#catalog" className="px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all hover:scale-105 glow-red bg-[#FF1E1E] text-white">
-              Explorar Catálogo
-            </a>
-            <a href="#mannequins" className="px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm border border-white/20 hover:border-red-500/50 transition-all hover:scale-105 bg-transparent text-white">
-              Ver Coleções
-            </a>
-          </div>
         </motion.div>
       </header>
 
