@@ -170,18 +170,20 @@ export default function App() {
               </svg>
               DISCORD
             </a>
+          </div>
+          <div className="flex items-center gap-4 relative z-50">
             <button onClick={() => setIsCartOpen(true)} className="relative hover:text-red-500 transition-colors p-2" aria-label="Carrinho">
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-6 h-6 text-white" />
               {cart.length > 0 && (
                 <span className="absolute top-0 right-0 bg-[#FF1E1E] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                   {cart.length}
                 </span>
               )}
             </button>
+            <button className="md:hidden p-2 -mr-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Menu">
+              {isMobileMenuOpen ? <X className="w-8 h-8 text-white" /> : <Menu className="w-8 h-8 text-white" />}
+            </button>
           </div>
-          <button className="md:hidden relative z-50 p-2 -mr-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Menu">
-            {isMobileMenuOpen ? <X className="w-8 h-8 text-white" /> : <Menu className="w-8 h-8 text-white" />}
-          </button>
         </div>
       </nav>
 
@@ -208,10 +210,6 @@ export default function App() {
               </svg>
               DISCORD
             </a>
-            <button onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }} className="flex items-center gap-3 font-bold uppercase tracking-widest text-sm hover:text-red-500 transition-colors">
-              <ShoppingCart className="w-5 h-5" /> 
-              Meu Carrinho ({cart.length})
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -485,9 +483,13 @@ export default function App() {
                 </a>
                 <button 
                   onClick={(e) => toggleCart(e, selectedItem)}
-                  className={`mt-3 w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all hover:scale-[1.02] border ${cart.find(c => c.id === selectedItem.id) ? 'bg-[#FF1E1E] border-[#FF1E1E] text-white' : 'border-white/20 hover:border-red-500/50 text-white'}`}
+                  className={`mt-3 w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all hover:scale-[1.02] border flex items-center justify-center gap-2 ${cart.find(c => c.id === selectedItem.id) ? 'bg-[#FF1E1E] border-[#FF1E1E] text-white' : 'border-white/20 hover:border-red-500/50 text-white'}`}
                 >
-                  {cart.find(c => c.id === selectedItem.id) ? 'Remover do Carrinho' : 'Adicionar ao Carrinho'}
+                  {cart.find(c => c.id === selectedItem.id) ? (
+                    <><Trash2 className="w-4 h-4" /> REMOVER</>
+                  ) : (
+                    <><ShoppingCart className="w-4 h-4" /> + CARRINHO</>
+                  )}
                 </button>
               </div>
             </motion.div>
