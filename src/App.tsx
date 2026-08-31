@@ -98,6 +98,7 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<typeof ITEMS[0] | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const filteredItems = ITEMS.filter(item => {
     if (filter === 'Favoritos') {
@@ -159,11 +160,38 @@ export default function App() {
               DISCORD
             </a>
           </div>
-          <button className="md:hidden" aria-label="Menu">
-            <Menu className="w-6 h-6 text-white" />
+          <button className="md:hidden relative z-50 p-2 -mr-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Menu">
+            {isMobileMenuOpen ? <X className="w-8 h-8 text-white" /> : <Menu className="w-8 h-8 text-white" />}
           </button>
         </div>
       </nav>
+
+      {/* MOBILE MENU */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-[72px] left-0 right-0 glass-strong border-b border-white/10 z-40 flex flex-col p-6 gap-6 md:hidden"
+          >
+            <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="font-bold uppercase tracking-widest text-sm hover:text-red-500 transition-colors">Home</a>
+            <a href="#catalog" onClick={() => setIsMobileMenuOpen(false)} className="font-bold uppercase tracking-widest text-sm hover:text-red-500 transition-colors">Catálogo</a>
+            <a href="#mannequins" onClick={() => setIsMobileMenuOpen(false)} className="font-bold uppercase tracking-widest text-sm hover:text-red-500 transition-colors">Manequins</a>
+            <a 
+              href="https://discord.gg/SzuFSMtt3" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-4 py-3 rounded-xl bg-[#FF1E1E]/10 border border-[#FF1E1E]/50 text-[#FF1E1E] flex items-center justify-center gap-2 font-bold tracking-widest text-[11px]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36" fill="currentColor" className="w-4 h-4">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c0,0,0-.09,0-.13C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.09,53,91,65.69,84.69,65.69Z"/>
+              </svg>
+              DISCORD
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* HERO */}
       <header id="home" className="min-h-screen relative flex items-center justify-center overflow-hidden">
@@ -175,7 +203,7 @@ export default function App() {
           transition={{ duration: 0.8 }}
           className="relative z-10 text-center px-6 max-w-4xl"
         >
-          <div className="inline-block mb-2 relative w-48 h-48 mx-auto flex items-center justify-center">
+          <div className="inline-block mb-2 relative w-32 h-32 md:w-48 md:h-48 mx-auto flex items-center justify-center">
             {/* The glow effect behind the crystal */}
             <div className="absolute inset-0 bg-red-600/20 blur-[30px] rounded-full pulse-glow pointer-events-none"></div>
             <iframe 
